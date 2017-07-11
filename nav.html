@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="style.css" rel='stylesheet'>
+        <script src="./jquery-3.1.1.min.js"></script>
+        <script>/*
+function getQueryParams(qs) {
+    qs = qs.split("+").join(" ");
+    var params = {},
+        tokens,
+        re = /[?&]?([^=]+)=([^&]*)/g;
+
+    while (tokens = re.exec(qs)) {
+        params[decodeURIComponent(tokens[1])]
+            = decodeURIComponent(tokens[2]);
+    }
+
+    return params;
+}
+
+var $_GET = getQueryParams(document.location.search);*/
+
+$(document).ready(function(){
+    $('#location').keyup(function(){
+        $.get("./getdata.php?room="+document.getElementById('location').value,function(data){
+            var jdata=JSON.parse(data);
+            var c = document.getElementById('view');
+            var ctx = c.getContext('2d');
+            ctx.clearRect(0,0,c.width,c.height);
+            ctx.font="30px Arial";
+            ctx.fillText(jdata.name,0,$("#view").height()/2);
+        }); 
+    });
+}); 
+        </script>
+    </head>
+
+    <body>
+        <div style='position:absolute;top:15px'>
+            <input style='position:absolute;top:5px;left:-5px' type='text' name='location' class='controls' id='location' placeholder='Search Box'>
+            <div class="map-canvas">
+                <canvas id='view'  width='450px' height='500px' style='border:1px solid #000000;'></canvas>
+            </div>
+        </div> 
+    </body>
+</html>

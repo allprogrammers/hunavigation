@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="./jquery-3.1.1.min.js"></script>
+    </head>
+    <body>
+        <script>
+            $(document).ready(function(){
+                $.get("data.txt",function (data){
+                    var rooms = data.split("\n");
+                    var elem = "<svg id='mapview' width='400' height='180'>";
+                    $.each(rooms,function(room){
+                        var items = rooms[room].split(" ");
+                        elem += "<rect id='";
+                        elem +=items[0];
+                        elem +="' width='";
+                        elem +=items[1];
+                        elem +="' height='";
+                        elem +=items[2];
+                        elem +="' x='";
+                        elem +=items[3];
+                        elem +="' y='";
+                        elem +=items[4];
+                        elem +="' style='fill:blue;stroke:pink;stroke-width:5;opacity:0.5' />";
+                    });
+                    elem +="</svg>";
+                    //alert(elem);
+                    $("#main").append(elem);
+                    //$("#ali").css({fill:"red"})
+                },'text');
+            });
+        </script>
+        <p id='para'></p>
+        <div id='main'></div>
+    </body>
+</html>

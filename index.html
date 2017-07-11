@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="./jquery-3.1.1.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                
+            });
+        </script>
+        <script>
+            var testmap = {
+                "a":["c"],
+                "b":["g","h","c"],
+                "c":["a","b","d","f"],
+                "d":["c","e"],
+                "e":["d"],
+                "f":["c"],
+                "h":["b"],
+                "g":["b"],
+            };
+            var map = {
+                "C-001":["C-004","Cor1"],
+                "C-004":["C-007","C-001","Cor1"],
+                "C-007":["C-004","C-005","Cor1"],
+                "C-005":["C-007"],
+                "E-002":["E-003","Cor1"],
+                "E-003":["E-002","E-010"],
+                "E-011":["E-010","E-012"],
+                "E-010":["E-011","E-003"],
+                "E-012":["E-011"],
+                "E-013":["E-012","Cor1"],
+                "E-012":["E-013"],
+                "E-017":["Cor1","C-015"],
+                "W-004":["W-007"],
+                "W-007":["W-004"],
+                "C-015":["C-017","E-017"],
+                "C-017":["C-015","C-018"],
+                "C-018":["C-017"],
+                "Cor1":["C-001","C-004","C-007","E-002","E-013","E-017"]
+            };
+            $(document).ready(function(){
+                $.get("gfloor.txt",function (data){
+                    var rooms = data.split("\n");
+                    var elem = "<svg id='mapview' width='1300' height='450'><image xlink:href='floorg.jpg' x='0' y='0' width='1279' height='404'/>";
+                    $.each(rooms,function(room){
+                        var items = rooms[room].split(" ");
+                        elem += "<rect id='";
+                        elem +=items[0];
+                        elem +="' width='";
+                        elem +=items[1];
+                        elem +="' height='";
+                        elem +=items[2];
+                        elem +="' x='";
+                        elem +=items[3];
+                        elem +="' y='";
+                        elem +=items[4];
+                        elem +="' style='fill:blue;stroke:pink;stroke-width:2;opacity:0.5' />";
+                    });
+                    elem +="</svg>";
+                    //alert(elem);
+                    $("#main").append(elem);
+                    //$("#ali").css({fill:"red"})
+                },'text');
+                //for (var key in map){
+                //    $("body").html($("body").html()+"<div id='"+key+"' style='background-color:yellow;width:50px;height:50px'></div>");
+                //}
+                $('#search').click(function(){
+                    var cl = $('#currentlocation').val();
+                    var dst = $('#destination').val();
+                    function search (togo,travelledpath){
+                        if ($.inArray(togo,travelledpath)!==-1){
+                            return travelledpath;
+                        }
+                        var ways = [];
+                        var items=map[travelledpath[travelledpath.length-1]];
+                        for (var i=0;i<items.length;i++){
+                            if ($.inArray(items[i],travelledpath)!==-1){
+                                continue;
+                            }
+                            var secondary = travelledpath.slice(0);
+                            secondary.push(items[i]);
+                            var ans=search(togo,secondary);
+                            if (ans!=="not found"){
+                                ways.push(ans);
+                            }
+                        }
+                        if (ways.length===0){
+                            return "not found";
+                        }
+                        var min = 0;
+                        for (var i=0;i<ways.length;i++){
+                            if (ways[i].length<ways[min].length){
+                                min=i;
+                            }
+                        }
+                        
+                        return ways[min];
+                    }
+                    route=search(dst,[cl]);
+                    for ( var key in route){
+                        alert(route[key]);
+                        $("#"+route[key]).css({fill:"red"});
+                    }
+                });
+                
+            });
+        </script>
+    </head>
+
+    <body>
+        <input type='text' name='currentlocation' class='controls' id='currentlocation' placeholder='Search Box'>
+        <br>
+        <input type='text' name='destination' class='controls' id='destination' placeholder='Search Box'>
+        <button type='button' id='search'>Search</button>
+        <div id="main"></div>
+    </body>
+</html>
